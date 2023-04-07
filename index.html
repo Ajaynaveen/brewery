@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Breweries by City</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+      .table-responsive {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-center">Breweries by City</h1>
+      <form>
+        <div class="form-group">
+          <label for="cityInput">Enter a City Name:</label>
+          <input type="text" class="form-control" id="cityInput" placeholder="Enter a city name">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Address</th>
+              <th>Phone</th>
+              <th>Website</th>
+            </tr>
+          </thead>
+          <tbody id="breweryTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <script>
+      const form = document.querySelector('form');
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const city = document.getElementById('cityInput').value;
+        fetch(`https://api.openbrewerydb.org/breweries?by_city=${city}`)
+          .then(response => response.json())
+          .then(breweries => {
+            const tableBody = document.getElementById('breweryTableBody');
+            tableBody.innerHTML = '';
+            breweries.forEach(brewery => {
+              const newRow = document.createElement('tr');
+              newRow.innerHTML = `
+                <td>${brewery.name}</td>
+                <td>${brewery.brewery_type}</td>
+                <td>${brewery.street}, ${brewery.city}, ${brewery.state} ${brewery.postal_code}</td>
+                <td>${brewery.phone}</td>
+                <td>${brewery.website_url ? `<a href="${brewery.website_url}">${brewery.website_url}</a>` : ''}</td>
+              `;
+              tableBody.appendChild(newRow);
+            });
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      });
+    </script>
+  </body>
+</html>
